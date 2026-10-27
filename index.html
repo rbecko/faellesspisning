@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fællesspisning 2026/27</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: ét fokus-kort øverst (næste gang), familievælger ved siden af, hele oversigten nederst */
+:root{--bg:#f5f7f8;--surface:#ffffff;--fg:#1c2a33;--muted:#5f6f7a;--line:#dde4e8;--cook:#1f5f7a;--cook-fg:#ffffff;--in:#cfe6ee;--in-fg:#1f5f7a;--out:#eef1f3;--pause:#e3e7ea;--alert:#b4531a;--alert-bg:#fbeee4;--focus:#1f5f7a;--display:"Bricolage Grotesque","Segoe UI",sans-serif;--body:"Figtree","Segoe UI",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12191e;--surface:#182229;--fg:#e6edf1;--muted:#9aabb6;--line:#2a3943;--cook:#5bb6d6;--cook-fg:#0d1a21;--in:#23414d;--in-fg:#9fd6e8;--out:#1b262d;--pause:#22313a;--alert:#f0a56b;--alert-bg:#33251a;--focus:#5bb6d6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12191e;--surface:#182229;--fg:#e6edf1;--muted:#9aabb6;--line:#2a3943;--cook:#5bb6d6;--cook-fg:#0d1a21;--in:#23414d;--in-fg:#9fd6e8;--out:#1b262d;--pause:#22313a;--alert:#f0a56b;--alert-bg:#33251a;--focus:#5bb6d6;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{overflow-x:hidden}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap>*{min-width:0}
+.wrap{max-width:1000px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,6vw,38px);line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:700;font-size:18px;margin:0}
+.sub{color:var(--muted);margin:6px 0 0}
+.top{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:720px){.top{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+label{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
+select{width:100%;font:inherit;font-size:16px;padding:12px;min-height:48px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.list{display:flex;flex-direction:column;gap:4px;margin-top:10px;max-height:340px;overflow-y:auto}
+.fam-btn{font:inherit;text-align:left;padding:9px 12px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--fg);cursor:pointer;min-height:40px}
+.fam-btn:hover{background:var(--out)}
+.fam-btn[aria-pressed=true]{background:var(--cook);color:var(--cook-fg);font-weight:600}
+.empty{color:var(--muted);font-size:14px;padding:8px 2px}
+.hero{display:flex;flex-direction:column;gap:14px;min-width:0}
+.hero .who{color:var(--muted);font-size:15px;margin:0}
+.big{border-radius:10px;padding:18px;background:var(--in);color:var(--fg);display:flex;flex-direction:column;gap:6px}
+.big.cook{background:var(--alert-bg);border:2px solid var(--alert)}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--in-fg)}
+.cook .kicker{color:var(--alert)}
+.date{font-family:var(--display);font-weight:700;font-size:clamp(26px,6vw,36px);line-height:1.1;text-wrap:balance}
+.until{font-size:16px}
+.cookmsg{font-weight:600;color:var(--alert);font-size:17px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.fact{border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.fact .k{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fact .v{font-weight:600;margin-top:2px}
+.placeholder{color:var(--muted);padding:24px 4px}
+.dates{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:12px}
+.chip{border-radius:8px;padding:8px 10px;font-size:14px;background:var(--out);color:var(--muted);display:flex;justify-content:space-between;gap:8px;align-items:center;min-width:0}
+.chip.in{background:var(--in);color:var(--in-fg);font-weight:600}
+.chip.cook{background:var(--cook);color:var(--cook-fg);font-weight:600}
+.chip.past{opacity:.5}
+.chip.next{outline:3px solid var(--focus);outline-offset:1px}
+.tag{font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:18px;height:14px;border-radius:3px;display:inline-block}
+.scroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:780px;font-size:13px}
+th,td{padding:0;text-align:center;border-bottom:1px solid var(--line)}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+thead th{font-size:12px;color:var(--muted);padding:8px 2px;font-weight:600;font-variant-numeric:tabular-nums}
+th.fam{position:sticky;left:0;background:var(--surface);text-align:left;padding:0 12px;min-width:150px;white-space:nowrap;font-weight:500;border-right:1px solid var(--line);z-index:1}
+td{height:30px;min-width:32px}
+td i{display:block;margin:2px;border-radius:4px;height:26px;line-height:26px;font-style:normal;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+td.s0 i{background:var(--out)}
+td.s1 i{background:var(--in);color:var(--in-fg)}
+td.s2 i{background:var(--cook);color:var(--cook-fg)}
+td.pause,th.pause{background:var(--pause);min-width:26px;color:var(--muted);font-size:10px}
+tr.sel th.fam{background:var(--in);font-weight:700;color:var(--fg);border-top:2px solid var(--focus);border-bottom:2px solid var(--focus)}
+tr.sel td{border-top:2px solid var(--focus);border-bottom:2px solid var(--focus)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Fællesspisning 2026/27</h1>
+<p class="sub">Vælg din familie og se, hvornår I er med næste gang. 21. og 28. december er juleferie.</p>
+</header>
+<div class="top" id="top">
+ <section class="panel">
+  <label for="fam">Vælg din familie</label>
+  <select id="fam"><option value="">Vælg familie …</option></select>
+ </section>
+ <section class="panel hero" id="result" aria-live="polite"></section>
+</div>
+<section class="panel" id="mine" hidden>
+ <h2>Alle jeres datoer</h2>
+ <div class="dates" id="dates"></div>
+</section>
+<section class="overview" style="display:flex;flex-direction:column;gap:10px;min-width:0">
+ <h2>Hele oversigten</h2>
+ <div class="legend">
+  <span><i class="sw" style="background:var(--cook)"></i>Laver mad</span>
+  <span><i class="sw" style="background:var(--in)"></i>Deltager</span>
+  <span><i class="sw" style="background:var(--out);border:1px solid var(--line)"></i>Deltager ikke</span>
+  <span><i class="sw" style="background:var(--pause)"></i>Juleferie</span>
+ </div>
+ <div class="scroll"><table id="tbl"></table></div>
+</section>
+</div>
+<script>
+const DATA={"dates": ["2026-11-02", "2026-11-09", "2026-11-16", "2026-11-23", "2026-11-30", "2026-12-07", "2026-12-14", "2027-01-04", "2027-01-11", "2027-01-18", "2027-01-25", "2027-02-01", "2027-02-08", "2027-02-15", "2027-02-22", "2027-03-01", "2027-03-08", "2027-03-15"], "families": [{"name": "Mathilde og Pierre", "s": [2, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]}, {"name": "Rie og Anders", "s": [1, 2, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1]}, {"name": "Kathrine og Nicolas", "s": [0, 0, 2, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1]}, {"name": "Mads og Eva", "s": [0, 0, 1, 2, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1]}, {"name": "Thor og Simone", "s": [0, 1, 0, 0, 2, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0]}, {"name": "Ninna og Peter", "s": [0, 1, 0, 1, 0, 2, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1]}, {"name": "Naja og Magnus", "s": [0, 1, 0, 1, 1, 0, 2, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]}, {"name": "Mille og Jacob", "s": [1, 0, 1, 1, 0, 1, 0, 2, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0]}, {"name": "Kathrine og Oliver", "s": [0, 1, 1, 0, 1, 0, 0, 1, 2, 0, 0, 1, 0, 1, 0, 1, 1, 0]}, {"name": "Niels og Anne", "s": [0, 1, 0, 1, 0, 0, 1, 1, 0, 2, 1, 0, 0, 1, 0, 1, 1, 0]}, {"name": "Claire og Nathalie", "s": [1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 2, 0, 1, 0, 0, 1, 0, 1]}, {"name": "Nina og Rasmus", "s": [1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 2, 0, 0, 1, 1, 0, 0]}, {"name": "Laura og Niels", "s": [1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 2, 1, 0, 1, 0, 0]}, {"name": "Julie og Christian", "s": [0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 2, 0, 0, 1, 1]}, {"name": "Camilla og Kristian", "s": [0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 2, 1, 0, 0]}, {"name": "Sissel og Theis", "s": [1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 2, 1, 0]}, {"name": "Rune og Alexandra", "s": [1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 2, 1]}, {"name": "Malte og Lotta", "s": [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 2]}]};
+const MON=["januar","februar","marts","april","maj","juni","juli","august","september","oktober","november","december"];
+const DAY=["søndag","mandag","tirsdag","onsdag","torsdag","fredag","lørdag"];
+const $=id=>document.getElementById(id);
+const pd=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const long=s=>{const t=pd(s);return DAY[t.getDay()]+" "+t.getDate()+". "+MON[t.getMonth()]+" "+t.getFullYear()};
+const short=s=>{const t=pd(s);return t.getDate()+". "+MON[t.getMonth()].slice(0,3)};
+const today=(()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())})();
+const diff=s=>Math.round((pd(s)-today)/864e5);
+const when=n=>n===0?"I dag":n===1?"I morgen":n<14?"Om "+n+" dage":"Om "+Math.round(n/7)+" uger ("+n+" dage)";
+const fams=DATA.families, dates=DATA.dates;
+let sel=null, cleanup=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+try{const v=localStorage.getItem("fs-fam");if(v!==null&&fams[+v])sel=+v}catch(e){}
+function buildSelect(){
+ const el=$("fam");
+ fams.map((f,i)=>[f,i]).sort((x,y)=>x[0].name.localeCompare(y[0].name,"da")).forEach(([f,i])=>{const o=document.createElement("option");o.value=String(i);o.textContent=f.name;el.appendChild(o)});
+ if(sel!==null)el.value=String(sel);
+}
+function choose(v){sel=v===""?null:+v;try{if(sel===null)localStorage.removeItem("fs-fam");else localStorage.setItem("fs-fam",String(sel))}catch(e){}
+ renderResult();renderTable()}
+function renderResult(){
+
+ const r=$("result"),mine=$("mine");
+ if(sel===null){r.innerHTML='<div class="placeholder">Vælg din familie i menuen, så viser vi næste fællesspisning og hvornår I selv laver mad.</div>';mine.hidden=true;return}
+ const f=fams[sel];
+ const nextI=dates.findIndex((s,i)=>diff(s)>=0&&f.s[i]>0);
+ const cookI=f.s.indexOf(2);
+ let html='<p class="who">'+f.name+'</p>';
+ if(nextI<0){html+='<div class="big"><div class="kicker">Sæsonen er slut</div><div class="date">Tak for i år</div><div class="until">Sidste fællesspisning var '+long(dates[17])+'.</div></div>'}
+ else{
+  const s=dates[nextI],isCook=f.s[nextI]===2,n=diff(s);
+  html+='<div class="big'+(isCook?' cook':'')+'"><div class="kicker">'+(isCook?'Næste gang · I laver mad':'Næste gang')+'</div><div class="date">'+long(s)+'</div><div class="until">'+when(n)+'</div>'+(isCook?'<div class="cookmsg">Obs: det er jeres madlavningsdag!</div>':'')+'</div>';
+  const cook=fams.find(x=>x.s[nextI]===2).name;
+  const k=dates[cookI];
+  let cf='<div class="facts">';
+  cf+='<div class="fact"><div class="k">Kok den aften</div><div class="v">'+(isCook?'Jer selv':cook)+'</div></div>';
+  if(isCook){const nx=dates.findIndex((x,i)=>i>nextI&&diff(x)>=0&&f.s[i]>0);cf+='<div class="fact"><div class="k">Derefter</div><div class="v">'+(nx<0?"Ikke flere":long(dates[nx]))+'</div></div>'}
+  else{cf+='<div class="fact"><div class="k">Jeres madlavningsdag</div><div class="v">'+(diff(k)<0?"Overstået ("+long(k)+")":long(k))+'</div></div>'}
+  cf+='</div>';html+=cf;
+ }
+ r.innerHTML=html;
+ mine.hidden=false;
+ const ds=$("dates");ds.innerHTML="";
+ dates.forEach((s,i)=>{if(!f.s[i])return;const c=document.createElement("div");
+  c.className="chip "+(f.s[i]===2?"cook":"in")+(diff(s)<0?" past":"")+(i===nextI?" next":"");
+  c.innerHTML='<span>'+DAY[pd(s).getDay()].slice(0,3)+" "+short(s)+'</span>'+(f.s[i]===2?'<span class="tag">Mad</span>':i===nextI?'<span class="tag">Næste</span>':'');
+  ds.appendChild(c)});
+}
+function renderTable(){
+ let h='<thead><tr><th class="fam" style="text-align:left;padding-left:12px">Familie</th>';
+ dates.forEach((s,i)=>{if(i===7)h+='<th class="pause">21</th><th class="pause">28</th>';h+='<th title="'+long(s)+'">'+short(s)+'</th>'});
+ h+='</tr></thead><tbody>';
+ fams.forEach((f,r)=>{h+='<tr'+(r===sel?' class="sel"':'')+'><th class="fam" scope="row">'+f.name+'</th>';
+  f.s.forEach((v,i)=>{if(i===7)h+='<td class="pause"></td><td class="pause"></td>';h+='<td class="s'+v+'"><i>'+(v===2?'Mad':v===1?'●':'')+'</i></td>'});
+  h+='</tr>'});
+ $("tbl").innerHTML=h+'</tbody>';
+}
+$("fam").addEventListener("change",e=>choose(e.target.value));
+buildSelect();renderResult();renderTable();
+</script>
+</body>
+</html>
